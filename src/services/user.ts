@@ -32,7 +32,6 @@ class UserService extends MedusaUserService {
       newStore = await storeRepo.save(newStore);
       user.store_id = newStore.id;
     }
-
     return await super.create(user, password);
   }
 }
