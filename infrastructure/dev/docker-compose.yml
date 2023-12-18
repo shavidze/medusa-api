@@ -1,0 +1,46 @@
+# Use postgres/example user/password credentials
+version: '3.9'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: medusa-postgress-container
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - store-api_db_data:/var/lib/postgresql/data
+    depends_on:
+      - store-api
+    networks:
+      - my_app_network
+  
+  store-api:
+    container_name: store-api-container
+    build:
+      context: ../../
+      dockerfile: ./infrastructure/Dockerfile  # Path to your Dockerfile
+      target: install-dependencies
+    entrypoint: [ "sh", "-c", "chmod +x ./infrastructure/develop.sh && sh  ./infrastructure/develop.sh dev"]
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+      - "${DEBUG_PORT}:${DEBUG_PORT}"
+    env_file:
+      - .env
+    networks:
+      - my_app_network
+    volumes:
+      - ../../src:/usr/src/app/src
+
+volumes:
+  store-api_db_data:
+    name: store-api_db_data
+
+networks:
+  my_app_network:
+    driver: bridge
+    name: my_app_network

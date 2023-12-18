@@ -1,7 +1,8 @@
-start_db: 
-	docker-compose up --build -d
-stop_db:
-	docker-compose down
+docker-dev-build:
+	make -C infrastructure dev-build
 
-delete_db:
-	docker-compose down -v
+docker-dev-up:
+	make -C infrastructure dev-up
+
+docker-dev-down:
+	make -C infrastructure dev-down
